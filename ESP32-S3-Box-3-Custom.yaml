@@ -440,7 +440,9 @@ micro_wake_word:
     - model: ${micro_wake_word_model}
   on_wake_word_detected:
     - media_player.pause:
-    - media_player.play_media: http://homeassistant.local:8123/local/sounds/Nudge.wav
+    - media_player.play_media: 
+        id: adf_media_player
+        media_url: 'http://homeassistant.local:8123/local/sounds/Nudge.wav'
     - wait_until:
         media_player.is_idle:
     - if:
