@@ -440,7 +440,7 @@ micro_wake_word:
     - model: ${micro_wake_word_model}
   on_wake_word_detected:
     - media_player.pause:
-    - media_player.play_media: sounds/nudge.wav
+    - media_player.play_media: 'sounds/nudge.wav'
     - wait_until:
         media_player.is_idle:
     - if:
