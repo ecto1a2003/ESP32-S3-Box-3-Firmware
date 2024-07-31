@@ -388,29 +388,31 @@ media_player:
           condition:
 		    - lambda: return (id(acknowledge) == false);
 		  then:
-				- lambda: return (id(replying_to_query) == true);      
-			  then:  
-				- if:  
-					condition:
-					  and:
-						- switch.is_on: continued_conversation
-						- switch.is_off: timer_ringing
-					then:
-					  - delay: 300ms
-					  - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
-					  - script.execute: stt_timeout_to_idle                    
-					  - script.execute: draw_display
-					else:
-					  - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
-					  - script.execute: draw_display      
-				- lambda: id(replying_to_query) = false;
-			  else:
-				- if:
-					condition:
-					  - switch.is_off: timer_ringing
-					then:
-					  - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
-					  - script.execute: draw_display
+		    - if:
+				condition:
+					- lambda: return (id(replying_to_query) == true);      
+				  then:  
+					- if:  
+						condition:
+						  and:
+							- switch.is_on: continued_conversation
+							- switch.is_off: timer_ringing
+						then:
+						  - delay: 300ms
+						  - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
+						  - script.execute: stt_timeout_to_idle                    
+						  - script.execute: draw_display
+						else:
+						  - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+						  - script.execute: draw_display      
+					- lambda: id(replying_to_query) = false;
+				  else:
+					- if:
+						condition:
+						  - switch.is_off: timer_ringing
+						then:
+						  - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+						  - script.execute: draw_display
 		  else:
 		    - lambda: id(acknowledge) = false;
 
@@ -1174,6 +1176,10 @@ globals:
     type: bool
     restore_value: false
     initial_value: "false"
+  - id: acknowledge
+    type: bool
+	restore_value: false
+	initial_value: "false"
 
 image:
   - file: ${error_illustration_file}
