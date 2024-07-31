@@ -388,6 +388,7 @@ media_player:
           condition:
             - lambda: return (id(acknowledge) == false);
           then:
+            - logger.log: "NOT Acknowledging.."
             - if:
                 condition:
                     - lambda: return (id(replying_to_query) == true);      
@@ -414,6 +415,7 @@ media_player:
                           - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
                           - script.execute: draw_display
           else:
+            - logger.log: "Acknowledging.."
             - lambda: id(acknowledge) = false;
 
 #    on_play:
