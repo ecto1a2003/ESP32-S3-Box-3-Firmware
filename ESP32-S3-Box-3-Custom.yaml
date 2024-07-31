@@ -444,6 +444,9 @@ micro_wake_word:
     - media_player.play_media: 
         id: adf_media_player
         media_url: 'http://homeassistant.local:8123/local/sounds/acknowledge.mp3'
+    - wait_until:
+        not:
+          media_player.is_playing:
     - delay: 400ms
     - if:
         condition:
