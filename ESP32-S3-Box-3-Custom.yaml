@@ -1178,8 +1178,8 @@ globals:
     initial_value: "false"
   - id: acknowledge
     type: bool
-	restore_value: false
-	initial_value: "false"
+    restore_value: false
+    initial_value: "false"
 
 image:
   - file: ${error_illustration_file}
