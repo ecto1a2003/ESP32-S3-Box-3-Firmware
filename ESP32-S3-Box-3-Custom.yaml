@@ -407,7 +407,7 @@ media_player:
                           - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
                           - script.execute: draw_display      
                     - lambda: id(replying_to_query) = false;
-                  else:
+              else:
                     - if:
                         condition:
                           - switch.is_off: timer_ringing
