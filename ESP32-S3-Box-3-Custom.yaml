@@ -386,35 +386,35 @@ media_player:
     on_idle:
       - if:
           condition:
-		    - lambda: return (id(acknowledge) == false);
-		  then:
-		    - if:
-				condition:
-					- lambda: return (id(replying_to_query) == true);      
-				  then:  
-					- if:  
-						condition:
-						  and:
-							- switch.is_on: continued_conversation
-							- switch.is_off: timer_ringing
-						then:
-						  - delay: 300ms
-						  - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
-						  - script.execute: stt_timeout_to_idle                    
-						  - script.execute: draw_display
-						else:
-						  - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
-						  - script.execute: draw_display      
-					- lambda: id(replying_to_query) = false;
-				  else:
-					- if:
-						condition:
-						  - switch.is_off: timer_ringing
-						then:
-						  - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
-						  - script.execute: draw_display
-		  else:
-		    - lambda: id(acknowledge) = false;
+            - lambda: return (id(acknowledge) == false);
+          then:
+            - if:
+                condition:
+                    - lambda: return (id(replying_to_query) == true);      
+                  then:  
+                    - if:  
+                        condition:
+                          and:
+                            - switch.is_on: continued_conversation
+                            - switch.is_off: timer_ringing
+                        then:
+                          - delay: 300ms
+                          - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
+                          - script.execute: stt_timeout_to_idle                    
+                          - script.execute: draw_display
+                        else:
+                          - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+                          - script.execute: draw_display      
+                    - lambda: id(replying_to_query) = false;
+                  else:
+                    - if:
+                        condition:
+                          - switch.is_off: timer_ringing
+                        then:
+                          - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+                          - script.execute: draw_display
+          else:
+            - lambda: id(acknowledge) = false;
 
 #    on_play:
 #      - if:
@@ -447,13 +447,10 @@ micro_wake_word:
   on_wake_word_detected:
     - media_player.pause:
     - delay: 100ms
-	- lambda: id(acknowledge) = true;
+    - lambda: id(acknowledge) = true;
     - media_player.play_media: 
         id: adf_media_player
         media_url: 'http://homeassistant.local:8123/local/sounds/acknowledge.mp3'
-    - wait_until:
-        not:
-          media_player.is_playing:
     - delay: 400ms
     - if:
         condition:
