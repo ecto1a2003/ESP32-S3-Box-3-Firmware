@@ -1377,6 +1377,7 @@ display:
     data_rate: 40MHz
     cs_pin: 5
     dc_pin: 4
+    invert_colors: false
     reset_pin:
       number: 48
       inverted: true
