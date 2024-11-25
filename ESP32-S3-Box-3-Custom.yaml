@@ -1248,7 +1248,7 @@ font:
       type: gfonts
       family: Roboto
       weight: 300
-    glyphs: ${allowed_characters}
+    # glyphs: ${allowed_characters}
     id: font_text
     size: 16
   - file:
