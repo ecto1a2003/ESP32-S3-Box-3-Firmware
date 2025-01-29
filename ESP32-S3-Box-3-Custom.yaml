@@ -45,7 +45,7 @@ substitutions:
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
-  min_version: 2024.6.0
+  min_version: 2024.9.0
   name_add_mac_suffix: true
   platformio_options:
     board_build.flash_mode: dio
@@ -71,7 +71,7 @@ esp32:
   flash_size: 16MB
   framework:
     type: esp-idf
-    version: 4.4.5
+    version: 4.4.8
     platform_version: 5.4.0
     sdkconfig_options:
       CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
@@ -1000,6 +1000,9 @@ switch:
     at581x_id: "Radar"
     name: "Enable Radar"
     id: enable_radar
+
+  - platform: restart
+    name: esp-cam restart
 
 number:
   - platform: template
