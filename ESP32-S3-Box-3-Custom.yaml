@@ -1002,7 +1002,7 @@ switch:
     id: enable_radar
 
   - platform: restart
-    name: esp-cam restart
+    name: S3 restart
 
 number:
   - platform: template
