@@ -1234,19 +1234,23 @@ image:
   - file: mdi:volume-plus
     id: volume_up
     resize: 240x180
-    type: TRANSPARENT_BINARY
+    type: BINARY
+    transparency: chroma_key
   - file: mdi:volume-minus
     id: volume_down
     resize: 240x180
-    type: TRANSPARENT_BINARY    
+    type: BINARY
+    transparency: chroma_key
   - file: mdi:microphone-off
     id: mic_mute
     resize: 28x21
-    type: TRANSPARENT_BINARY
+    type: BINARY
+    transparency: chroma_key
   - file: mdi:volume-mute
     id: speaker_mute
     resize: 28x21
-    type: TRANSPARENT_BINARY
+    type: BINARY
+    transparency: chroma_key
 
 font:
   - file:
