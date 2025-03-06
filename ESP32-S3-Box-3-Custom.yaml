@@ -298,17 +298,11 @@ at581x:
   i2c_id: bus_b
 
 i2c:
-  - id: bus_a
-    sda: GPIO8
-    scl: GPIO18
-    scan: true
-    frequency: 100kHz
-  
-  - id: bus_b
-    sda: GPIO41
-    scl: GPIO40
-    scan: true
-    frequency: 100kHz
+  sda: GPIO8
+  scl: GPIO18
+  scan: true
+  frequency: 100kHz
+
 
 i2s_audio:
   - id: i2s_audio_bus
@@ -319,14 +313,12 @@ i2s_audio:
 audio_adc:
   - id: es7210_adc
     platform: es7210
-    i2c_id: bus_a
     bits_per_sample: 16bit
     sample_rate: 16000
 
 audio_dac:
   - id: es8311_dac
     platform: es8311
-    i2c_id: bus_a
     bits_per_sample: 16bit
     sample_rate: 48000
 
@@ -354,6 +346,8 @@ speaker:
 media_player:
   - platform: speaker
     id: speaker_media_player
+    volume_min: 0.5
+    volume_max: 0.8
     name: s3-box_media_player
     announcement_pipeline:
       speaker: box_speaker
@@ -417,9 +411,7 @@ micro_wake_word:
     - media_player.pause:
     - delay: 100ms
     - lambda: id(acknowledge) = true;
-    - media_player.play_media: 
-        id: speaker_media_player
-        media_url: 'http://homeassistant.local:8123/local/sounds/acknowledge.mp3'
+    - media_player.play_media: 'http://homeassistant.local:8123/local/sounds/acknowledge.mp3'
     - delay: 400ms
     - if:
         condition:
@@ -438,7 +430,7 @@ voice_assistant:
   media_player: speaker_media_player
   noise_suppression_level: 2
   auto_gain: 31dBFS
-  volume_multiplier: 4.0
+  volume_multiplier: 2.0
   #vad_threshold: 2
   on_listening:
     - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
@@ -1242,11 +1234,11 @@ font:
     size: 15
   - file:
       type: gfonts
-      family: Roboto Mono
+      family: Figtree
       weight: 300
     # glyphs: ${allowed_characters}
     id: font_timer
-    size: 46
+    size: 30
 
 text_sensor:
   - id: text_request
@@ -1632,7 +1624,6 @@ sensor:
 
 touchscreen:
   - platform: gt911
-    i2c_id: bus_a
     interrupt_pin: GPIO3
     update_interval: 20ms
     on_touch:
