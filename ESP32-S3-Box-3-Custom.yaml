@@ -45,10 +45,8 @@ substitutions:
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
-  min_version: 2024.9.0
+  min_version: 2025.2.0
   name_add_mac_suffix: true
-  platformio_options:
-    board_build.flash_mode: dio
   project:
     name: esphome.voice-assistant
     version: "2.0"  
@@ -71,18 +69,11 @@ esp32:
   flash_size: 16MB
   framework:
     type: esp-idf
-    version: 4.4.8
-    platform_version: 5.4.0
     sdkconfig_options:
       CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
-      CONFIG_AUDIO_BOARD_CUSTOM: "y"
-      CONFIG_ESP32_S3_BOX_3_BOARD: "y"
-    components:
-      - name: esp32_s3_box_3_board
-        source: github://jesserockz/esp32-s3-box-3-board@main
-        refresh: 0s
+
 
 psram:
   mode: octal
@@ -93,13 +84,6 @@ external_components:
     components: esp_adf
     refresh: 0s
 
-  - source:
-      type: git
-      url: https://github.com/gnumpi/esphome_audio
-      ref: dev-next
-      #type: local
-      #path: components
-    components: [ adf_pipeline, i2s_audio ]
 
 captive_portal:
 
@@ -228,7 +212,7 @@ binary_sensor:
       then:
         - logger.log: "Volume Minus pressed"
         - lambda: |-
-            id(speaker_volume) = static_cast<int>(id(adf_media_player).volume * 100);
+            id(speaker_volume) = static_cast<int>(id(speaker_media_player).volume * 100);
             id(speaker_volume) = id(speaker_volume) - (id(speaker_volume) % 5); // rounded to 5
         - if:
             condition:
@@ -252,7 +236,7 @@ binary_sensor:
       then:
         - logger.log: "Volume Plus pressed"
         - lambda: |-
-            id(speaker_volume) = static_cast<int>(id(adf_media_player).volume * 100);
+            id(speaker_volume) = static_cast<int>(id(speaker_media_player).volume * 100);
             id(speaker_volume) = id(speaker_volume) - (id(speaker_volume) % 5); // rounded to 5
         - if:
             condition:
@@ -331,59 +315,55 @@ i2c:
     frequency: 100kHz
 
 i2s_audio:
-  - id: i2s_shared
+  - id: i2s_audio_bus
     i2s_lrclk_pin: GPIO45
     i2s_bclk_pin: GPIO17
     i2s_mclk_pin: GPIO2
-    access_mode: duplex
-
-adf_pipeline:
-  - platform: i2s_audio
-    type: audio_out
-    id: adf_i2s_out
-    i2s_audio_id: i2s_shared
-    i2s_dout_pin: GPIO15
-    adf_alc: false
-    dac:
-      i2c_id: bus_a
-      model: es8311
-      address: 0x18
-      enable_pin: GPIO46
-
-    sample_rate: 16000
+    
+audio_adc:
+  - id: es7210_adc
+    platform: es7210
+    i2c_id: bus_a
     bits_per_sample: 16bit
-    fixed_settings: true
+    sample_rate: 16000
 
+audio_dac:
+  - id: es8311_dac
+    platform: es8311
+    i2c_id: bus_a
+    bits_per_sample: 16bit
+    sample_rate: 48000
+
+microphone:
   - platform: i2s_audio
-    type: audio_in
-    id: adf_i2s_in
-    i2s_audio_id: i2s_shared
+    id: box_mic
+    sample_rate: 16000
     i2s_din_pin: GPIO16
-    pdm: false
-    adc:
-      i2c_id: bus_a
-      model: es7210
-      address: 0x40
-
-    sample_rate: 16000
     bits_per_sample: 16bit
-    fixed_settings: true
+    adc_type: external
+    
+speaker:
+  - platform: i2s_audio
+    id: box_speaker
+    i2s_dout_pin: GPIO15
+    dac_type: external
+    sample_rate: 48000
+    bits_per_sample: 16bit
+    channel: left
+    audio_dac: es8311_dac
+    buffer_duration: 100ms
+
 
 
 media_player:
-  - platform: adf_pipeline
-    id: adf_media_player
+  - platform: speaker
+    id: speaker_media_player
     name: s3-box_media_player
-    internal: false
-    keep_pipeline_alive: true
-    announcement_audio:
-      sample_rate: 22050
-      bits_per_sample: 16
-      num_channels: 1
-    pipeline:
-      - self
-      - resampler
-      - adf_i2s_out
+    announcement_pipeline:
+      speaker: box_speaker
+      format: FLAC
+      sample_rate: 48000
+      num_channels: 1  # S3 Box only has one output channel
 
     on_idle:
       - if:
@@ -432,18 +412,7 @@ media_player:
       - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
       - script.execute: draw_display
 
-microphone:
-  - platform: adf_pipeline
-    id: box_mic
-    keep_pipeline_alive: true
-    pipeline:
-      - adf_i2s_in
-      - resampler
-      - self
 
-#speaker:
-#  - platform: esp_adf
-#    id: box_speaker
 
 micro_wake_word:
   models:
@@ -453,7 +422,7 @@ micro_wake_word:
     - delay: 100ms
     - lambda: id(acknowledge) = true;
     - media_player.play_media: 
-        id: adf_media_player
+        id: speaker_media_player
         media_url: 'http://homeassistant.local:8123/local/sounds/acknowledge.mp3'
     - delay: 400ms
     - if:
@@ -470,8 +439,7 @@ micro_wake_word:
 voice_assistant:
   id: va
   microphone: box_mic
-  media_player: adf_media_player
-  use_wake_word: true
+  media_player: speaker_media_player
   noise_suppression_level: 2
   auto_gain: 31dBFS
   volume_multiplier: 4.0
@@ -631,7 +599,7 @@ voice_assistant:
           switch.is_on: timer_ringing
         then:
           - media_player.play_media:
-              id: adf_media_player
+              id: speaker_media_player
               media_url: 'http://homeassistant.local:8123/local/sounds/timer.mp3'          
           - delay: 1s
     - wait_until:
@@ -990,7 +958,7 @@ switch:
             lambda: return !id(init_in_progress);
           then:
             - lambda: |-          
-                id(speaker_volume_backup) = static_cast<int>(id(adf_media_player).volume * 100);
+                id(speaker_volume_backup) = static_cast<int>(id(speaker_media_player).volume * 100);
                 if (id(speaker_volume) > 0) {
                   id(speaker_volume) = 0;
                 }
@@ -1428,9 +1396,9 @@ display:
 
           // Volume or mute on right top corner 
           
-          if (id(adf_media_player).volume > 0) {
+          if (id(speaker_media_player).volume > 0) {
             char media_player_volume_display[80];
-            sprintf(media_player_volume_display, "Volume: %.0f%%", id(adf_media_player).volume * 100);
+            sprintf(media_player_volume_display, "Volume: %.0f%%", id(speaker_media_player).volume * 100);
 
             int x1_vol, y1_vol, text_width_vol, text_height_vol;                  
             it.get_text_bounds(0, 0, media_player_volume_display, id(font_text), TextAlign::TOP_LEFT, &x1_vol, &y1_vol, &text_width_vol, &text_height_vol); // Get the text dimensions            
@@ -1442,7 +1410,7 @@ display:
             int text_y_vol = rect_y_vol + 5; // 5-pixel padding
 
             it.filled_rectangle(rect_x_vol, rect_y_vol, rect_width_vol, rect_height_vol, Color::BLACK); // Draw the black rectangle            
-            it.printf(text_x_vol, text_y_vol, id(font_text), Color::WHITE, "Volume: %.0f%%", id(adf_media_player).volume * 100); // Print the volume in white
+            it.printf(text_x_vol, text_y_vol, id(font_text), Color::WHITE, "Volume: %.0f%%", id(speaker_media_player).volume * 100); // Print the volume in white
           } else {
               it.filled_rectangle(277, 10, 38, 31, Color::BLACK); // Draw the black rectangle            
               it.image(282, 15, id(speaker_mute), ImageAlign::TOP_LEFT);
