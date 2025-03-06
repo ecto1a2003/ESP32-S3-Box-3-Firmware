@@ -79,11 +79,6 @@ psram:
   mode: octal
   speed: 80MHz
 
-external_components:
-  - source: github://pr#5230
-    components: esp_adf
-    refresh: 0s
-
 
 captive_portal:
 
@@ -306,17 +301,13 @@ i2c:
   - id: bus_a
     sda: GPIO8
     scl: GPIO18
-    scan: false
-    sda_pullup_enabled: true
-    scl_pullup_enabled: true
+    scan: true
     frequency: 100kHz
   
   - id: bus_b
     sda: GPIO41
     scl: GPIO40
-    scan: false
-    sda_pullup_enabled: true
-    scl_pullup_enabled: true
+    scan: true
     frequency: 100kHz
 
 i2s_audio:
