@@ -638,7 +638,8 @@ voice_assistant:
         not:
           media_player.is_playing:
     - switch.turn_off: timer_ringing
-    - media_player.stop
+    - media_player.stop: 
+        announcement: true
     - script.execute: return_to_idle    
 
 script:
