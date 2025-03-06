@@ -298,10 +298,16 @@ at581x:
   i2c_id: bus_b
 
 i2c:
+- id: bus_a
   sda: GPIO8
   scl: GPIO18
   scan: true
   frequency: 100kHz
+
+- id: bus_b
+  sda: GPIO41
+  scl: GPIO40
+  frequency: 100khz
 
 
 i2s_audio:
@@ -313,12 +319,14 @@ i2s_audio:
 audio_adc:
   - id: es7210_adc
     platform: es7210
+    i2c_id: bus_a
     bits_per_sample: 16bit
     sample_rate: 16000
 
 audio_dac:
   - id: es8311_dac
     platform: es8311
+    i2c_id: bus_a
     bits_per_sample: 16bit
     sample_rate: 48000
 
