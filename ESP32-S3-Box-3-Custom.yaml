@@ -304,15 +304,20 @@ at581x:
 
 i2c:
   - id: bus_a
-    sda: GPIO8
+    sda: GPIO08
     scl: GPIO18
+    scan: false
+    sda_pullup_enabled: true
+    scl_pullup_enabled: true
     frequency: 100kHz
-    scan: True
   
   - id: bus_b
     sda: GPIO41
     scl: GPIO40
-    frequency: 100kHz
+    scan: false
+    sda_pullup_enabled: true
+    scl_pullup_enabled: true
+    frequency: 50kHz
 
 i2s_audio:
   - id: i2s_audio_bus
