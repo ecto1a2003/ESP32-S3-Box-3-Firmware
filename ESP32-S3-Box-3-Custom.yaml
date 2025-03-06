@@ -1632,6 +1632,7 @@ sensor:
 
 touchscreen:
   - platform: gt911
+    i2c_id: bus_a
     interrupt_pin: GPIO3
     update_interval: 20ms
     on_touch:
