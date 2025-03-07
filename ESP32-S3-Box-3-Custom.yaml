@@ -296,18 +296,23 @@ light:
 at581x:
   id: "Radar"
   i2c_id: bus_b
-
+  
 i2c:
-- id: bus_a
-  sda: GPIO8
-  scl: GPIO18
-  scan: true
-  frequency: 100kHz
+  - id: bus_a
+    sda: GPIO08
+    scl: GPIO18
+    scan: false
+    sda_pullup_enabled: true
+    scl_pullup_enabled: true
+    frequency: 100kHz
 
-- id: bus_b
-  sda: GPIO41
-  scl: GPIO40
-  frequency: 100khz
+  - sda: GPIO41
+    scl: GPIO40
+    scan: false
+    sda_pullup_enabled: true
+    scl_pullup_enabled: true
+    frequency: 50kHz
+    id: bus_b
 
 
 i2s_audio:
@@ -436,9 +441,10 @@ voice_assistant:
   id: va
   microphone: box_mic
   media_player: speaker_media_player
+  use_wake_word: true
   noise_suppression_level: 2
   auto_gain: 31dBFS
-  volume_multiplier: 2.0
+  volume_multiplier: 4.0
   #vad_threshold: 2
   on_listening:
     - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
